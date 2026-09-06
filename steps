@@ -1,0 +1,7 @@
+kubectl create secret generic app-secrets \
+  -n med-erp \
+  --from-literal=MONGODB_URI_USER="mongodb+srv://alkesh:redhat@edublitz.vyx8g5k.mongodb.net/users_db?appName=edublitz" \
+  --from-literal=MONGODB_URI_PRODUCT="mongodb+srv://alkesh:redhat@edublitz.vyx8g5k.mongodb.net/products_db?appName=edublitz" \
+  --from-literal=MONGODB_URI_ORDER="mongodb+srv://alkesh:redhat@edublitz.vyx8g5k.mongodb.net/order?appName=edublitz" \
+  --from-literal=JWT_SECRET="404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970" \
+  --dry-run=client -o yaml | kubectl apply -f -
