@@ -29,3 +29,23 @@ aws s3 cp dist/index.html "s3://${BUCKET}/index.html" \
   --region "$REGION" \
   --cache-control "no-cache,no-store,must-revalidate" \
   --content-type "text/html"
+
+
+  # Add Helm repo
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update
+
+# Install ALB controller (uses IRSA)
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=med-erp-prod-eks \
+  --set serviceAccount.create=true \
+  --set serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=arn:aws:iam::ACCOUNT_ID:role/AWSLoadBalancerControllerIAMRole
+
+# Verify
+kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
+kubectl get ingressclass
+
+aws iam create-role \
+  --role-name AWSLoadBalancerControllerIAMRole \
+  --assume-role-policy-document file://alb-controller-trust-policy.json
